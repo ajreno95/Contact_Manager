@@ -40,7 +40,6 @@ func (d *DB) connectToDatabase() {
 	if err != nil {
 		panic(err)
 	}
-	defer db.Close()
 
 	err = db.Ping()
 	if err != nil {
@@ -50,7 +49,42 @@ func (d *DB) connectToDatabase() {
 	}
 }
 
+func (d *DB) insertNewContact(c Contact) {
+	var query string
+	if d.DB != nil {
+		query = d.generateInsertContactString()
+	} else {
+		fmt.Println("There is no connection to the database, cannot insert contact")
+		return
+	}
+	_, err := d.DB.Exec(query, c.first_name, c.last_name, c.email)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (d *DB) grabContact(c Contact) Contact {
+	query := d.generateSelectContactString()
+	var grabbedContact Contact
+
+	err := d.DB.QueryRow(query, c.first_name, c.last_name, c.email).Scan(&grabbedContact.id, &grabbedContact.first_name, &grabbedContact.last_name, &grabbedContact.email)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return grabbedContact
+}
+
 func (d *DB) generateConnectionString() string {
 	return fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		d.host, d.port, d.user, d.password, d.name)
+}
+
+func (d *DB) generateInsertContactString() string {
+	return `INSERT INTO contacts (first_name, last_name, email) VALUES ($1, $2, $3)`
+}
+
+func (d *DB) generateSelectContactString() string {
+	return `SELECT * from contacts WHERE first_name=$1 AND last_name=$2 AND email=$3`
 }
