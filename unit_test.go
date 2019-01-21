@@ -12,21 +12,64 @@ func TestConnectingToDatabase(t *testing.T) {
 }
 
 func TestInsertingNewContacts(t *testing.T) {
+	//Build test data
 	db := createDBWithInfo()
 	db.connectToDatabase()
-
 	contact := Contact{
 		first_name: "Alexander",
 		last_name:  "Reno",
 		email:      "ajreno952@gmail.com",
 	}
 
+	//Operate on test data
 	db.insertNewContact(contact)
-
 	selectedContact := db.grabContact(contact)
 
+	//Check test data
 	if selectedContact.first_name != "Alexander" && selectedContact.last_name != "Reno" && selectedContact.email != "ajreno952@gmail.com" {
 		t.Errorf("Contact has not been successfully created")
+	}
+}
+
+func TestDeletingContact(t *testing.T) {
+	//Build test data
+	db := createDBWithInfo()
+	db.connectToDatabase()
+	contact := Contact{
+		first_name: "john",
+		last_name:  "doe",
+		email:      "test@gmail.com",
+	}
+
+	//Operate on test data
+	db.insertNewContact(contact)
+
+	//Check test data
+	if db.deleteContact(contact) != nil {
+		t.Errorf("Contact has not been successfully deleted")
+	}
+}
+
+func TestUpdatingContact(t *testing.T) {
+	//Build test data
+	db := createDBWithInfo()
+	db.connectToDatabase()
+	contact := Contact{
+		first_name: "john",
+		last_name:  "doe",
+		email:      "1234@gmail.com",
+	}
+
+	//Operate on test data
+	db.insertNewContact(contact)
+	contact.first_name = "jane"
+	db.updateContact(contact)
+
+	grabbedContact := db.grabContactByEmail(contact)
+
+	//Check test data
+	if grabbedContact.first_name != "jane" && grabbedContact.last_name != "doe" && grabbedContact.email != "1234@gmail.com" {
+		t.Errorf("Contact has not been successfully updated")
 	}
 
 }

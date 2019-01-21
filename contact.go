@@ -1,5 +1,6 @@
 package main
 
+//Contact struct for mapping contact information
 type Contact struct {
 	id         int
 	first_name string
