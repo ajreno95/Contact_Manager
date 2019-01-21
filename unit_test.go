@@ -26,7 +26,7 @@ func TestInsertingNewContacts(t *testing.T) {
 	selectedContact := db.grabContact(contact)
 
 	//Check test data
-	if selectedContact.first_name != "Alexander" && selectedContact.last_name != "Reno" && selectedContact.email != "ajreno952@gmail.com" {
+	if selectedContact.first_name != "Alexander" || selectedContact.last_name != "Reno" || selectedContact.email != "ajreno952@gmail.com" {
 		t.Errorf("Contact has not been successfully created")
 	}
 }
@@ -68,7 +68,7 @@ func TestUpdatingContact(t *testing.T) {
 	grabbedContact := db.grabContactByEmail(contact)
 
 	//Check test data
-	if grabbedContact.first_name != "jane" && grabbedContact.last_name != "doe" && grabbedContact.email != "1234@gmail.com" {
+	if grabbedContact.first_name != "jane" || grabbedContact.last_name != "doe" || grabbedContact.email != "1234@gmail.com" {
 		t.Errorf("Contact has not been successfully updated")
 	}
 
