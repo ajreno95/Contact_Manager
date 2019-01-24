@@ -7,6 +7,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
+//DB Struct that will hold our Database information and connection
 type DB struct {
 	DB       *sql.DB
 	name     string
@@ -57,7 +58,7 @@ func (d *DB) insertNewContact(c Contact) {
 		fmt.Println("There is no connection to the database, cannot insert contact")
 		return
 	}
-	_, err := d.DB.Exec(query, c.first_name, c.last_name, c.email)
+	_, err := d.DB.Exec(query, c.FirstName, c.LastName, c.Email)
 	if err != nil {
 		panic(err)
 	}
@@ -68,7 +69,7 @@ func (d *DB) grabContact(c Contact) Contact {
 	var grabbedContact Contact
 
 	//this could probably be refactored into two seperate methods
-	err := d.DB.QueryRow(query, c.first_name, c.last_name, c.email).Scan(&grabbedContact.id, &grabbedContact.first_name, &grabbedContact.last_name, &grabbedContact.email)
+	err := d.DB.QueryRow(query, c.FirstName, c.LastName, c.Email).Scan(&grabbedContact.ID, &grabbedContact.FirstName, &grabbedContact.LastName, &grabbedContact.Email)
 
 	if err != nil {
 		panic(err)
@@ -81,7 +82,7 @@ func (d *DB) grabContactByEmail(c Contact) Contact {
 	query := d.generateSelectContactByEmailString()
 	var grabbedContact Contact
 
-	err := d.DB.QueryRow(query, c.email).Scan(&grabbedContact.id, &grabbedContact.first_name, &grabbedContact.last_name, &grabbedContact.email)
+	err := d.DB.QueryRow(query, c.Email).Scan(&grabbedContact.ID, &grabbedContact.FirstName, &grabbedContact.LastName, &grabbedContact.Email)
 
 	if err != nil {
 		panic(err)
@@ -93,14 +94,14 @@ func (d *DB) grabContactByEmail(c Contact) Contact {
 func (d *DB) deleteContact(c Contact) error {
 	query := d.generateDeleteContactString()
 
-	_, err := d.DB.Exec(query, c.first_name, c.last_name, c.email)
+	_, err := d.DB.Exec(query, c.FirstName, c.LastName, c.Email)
 	return err
 }
 
 func (d *DB) updateContact(c Contact) error {
 	query := d.generateUpdateContactString()
 
-	_, err := d.DB.Exec(query, c.first_name, c.last_name, c.email, c.email)
+	_, err := d.DB.Exec(query, c.FirstName, c.LastName, c.Email, c.Email)
 
 	return err
 }
@@ -111,11 +112,11 @@ func (d DB) generateConnectionString() string {
 }
 
 func (d DB) generateInsertContactString() string {
-	return `INSERT INTO contacts (first_name, last_name, email) VALUES ($1, $2, $3)`
+	return `INSERT INTO contacts (firstname, lastname, email) VALUES ($1, $2, $3)`
 }
 
 func (d DB) generateSelectContactString() string {
-	return `SELECT * FROM contacts WHERE first_name=$1 AND last_name=$2 AND email=$3`
+	return `SELECT * FROM contacts WHERE firstname=$1 AND lastname=$2 AND email=$3`
 }
 
 func (d DB) generateSelectContactByEmailString() string {
@@ -123,9 +124,9 @@ func (d DB) generateSelectContactByEmailString() string {
 }
 
 func (d DB) generateDeleteContactString() string {
-	return `DELETE FROM contacts WHERE first_name=$1 AND last_name=$2 AND email=$3`
+	return `DELETE FROM contacts WHERE firstname=$1 AND lastname=$2 AND email=$3`
 }
 
 func (d DB) generateUpdateContactString() string {
-	return `UPDATE contacts SET first_name=$1, last_name=$2, email=$3 WHERE email=$4`
+	return `UPDATE contacts SET firstname=$1, lastname=$2, email=$3 WHERE email=$4`
 }
